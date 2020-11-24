@@ -1,6 +1,6 @@
 # TODO #
 
-Sample TODO block as an exercice.
+Sample TODO block as an exercise.
 
 ## License ##
 

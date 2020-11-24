@@ -29,6 +29,23 @@ use core\task\adhoc_task;
 class adhoc_send_message extends adhoc_task {
 
     public function execute() {
+        global $CFG;
         $data = $this->get_custom_data();
+        $message = new \core\message\message();
+        $message->component = 'block_todo';
+        $message->name = 'todocreated';
+
+        $message->userfrom = \core_user::get_noreply_user();
+        $message->userto = \core_user::get_user($data['userid']);
+        $message->subject = 'Todo Created';
+        $message->fullmessage = $data['other']['content'];
+        $message->fullmessageformat = FORMAT_PLAIN;
+        $message->fullmessagehtml = "<p>{$data['other']['content']}</p>";
+        $message->smallmessage = 'small message';
+        $message->contexturl = $CFG->wwwroot.'/my';
+        $message->contexturlname = 'Context name';
+        $message->replyto = "random@example.com";
+        $message->courseid = SITEID;
+        $messageid = message_send($message);
     }
 }

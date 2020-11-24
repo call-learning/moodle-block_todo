@@ -23,32 +23,17 @@
  */
 
 namespace block_todo\observer;
+use block_todo\task\adhoc_send_message;
+
 defined('MOODLE_INTERNAL') || die();
 
 class todo_observer {
     public static function todo_created_callback(\core\event\base $event) {
         $data = $event->get_data();
         if (!empty($data['other'])) {
-            global $USER, $CFG;
-            $message = new \core\message\message();
-            //$message->component = 'moodle';
-            //$message->name = 'instantmessage';
-            $message->component = 'block_todo';
-            $message->name = 'todocreated';
-
-            $message->userfrom = $USER;
-            $message->userto = \core_user::get_user($data['userid']);
-            $message->subject = 'Todo Created'; //
-            $message->fullmessage = $data['other']['content'];
-            $message->fullmessageformat = FORMAT_PLAIN;
-            $message->fullmessagehtml = "<p>{$data['other']['content']}</p>";
-            $message->smallmessage = 'small message';
-            //$message->notification = '0';
-            $message->contexturl = $CFG->wwwroot.'/my';
-            $message->contexturlname = 'Context name';
-            $message->replyto = "random@example.com";
-            $message->courseid = SITEID;
-            $messageid = message_send($message);
+            $task = new adhoc_send_message();
+            $task->set_custom_data($data);
+            \core\task\manager::queue_adhoc_task($task);
         }
     }
 }
